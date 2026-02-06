@@ -120,3 +120,4 @@
 /Users/sweety/Documents/dotnet/MyLearningWebApi/obj/Debug/net10.0/MyLearningWebApi.pdb
 /Users/sweety/Documents/dotnet/MyLearningWebApi/obj/Debug/net10.0/MyLearningWebApi.genruntimeconfig.cache
 /Users/sweety/Documents/dotnet/MyLearningWebApi/obj/Debug/net10.0/ref/MyLearningWebApi.dll
+/Users/sweety/Documents/dotnet/MyLearningWebApi/obj/Debug/net10.0/MyLearningWebApi.sourcelink.json
