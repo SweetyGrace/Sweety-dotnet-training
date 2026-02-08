@@ -62,4 +62,9 @@ public class UserRepository : IUserRepository
         await context.SaveChangesAsync();
         return true;
     }
+    
+    public async Task<User?> GetUserByEmailAsync(string email)
+    {
+        return await context.Users.FirstOrDefaultAsync(u => u.Email == email);
+    }
 }

@@ -5,12 +5,12 @@ using Microsoft.AspNetCore.Mvc;
 using Capstone.Services;
 using Capstone.Entities;
 using Capstone.Filters;
+using Microsoft.AspNetCore.Authorization;
 
 [ApiController]
 [ServiceFilter(typeof(GlobalResponseFilter))]
 [ServiceFilter(typeof(ResponseTimeFilter))]
 [Route("api/policies")]
-
 public class PoliciesController : ControllerBase
 {
     private readonly IPolicyService policyService;

@@ -1,10 +1,12 @@
 namespace Capstone.Controller;
 using Capstone.Entities;
 using Capstone.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc; 
 
 [ApiController]
 [Route("api/users")]
+[Authorize(Roles = "User")]
 public class UserController : ControllerBase
 {
     public readonly IuserService userService;
