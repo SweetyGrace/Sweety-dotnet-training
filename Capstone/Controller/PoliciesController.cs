@@ -52,6 +52,7 @@ public class PoliciesController : ControllerBase
     }
 
     [HttpPost(Name = "CreatePolicy")]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> CreatePolicy([FromBody] Policy policy)
     {
         if (!ModelState.IsValid)
@@ -77,6 +78,7 @@ public class PoliciesController : ControllerBase
     }
 
     [HttpPut("{id}", Name = "UpdatePolicy")]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> UpdatePolicy(int id, [FromBody] Policy policy)
     {
         if (id != policy.Id)
@@ -94,6 +96,7 @@ public class PoliciesController : ControllerBase
     }
 
     [HttpDelete("{id}", Name = "DeletePolicy")]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> DeletePolicy(int id)
     {
         var result = await policyService.DeletePolicyAsync(id);

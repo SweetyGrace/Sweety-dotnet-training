@@ -8,12 +8,14 @@ public class EnrollmentService : IEnrollmentService
     private readonly IEnrollmentRepository _enrollmentRepository;
     private readonly IUserRepository _userRepository;
     private readonly IpolicyRepository _policyRepository;
+    private readonly ILogger<EnrollmentService> _logger;
 
-    public EnrollmentService(IEnrollmentRepository enrollmentRepository, IUserRepository userRepository, IpolicyRepository policyRepository)
+    public EnrollmentService(IEnrollmentRepository enrollmentRepository, IUserRepository userRepository, IpolicyRepository policyRepository, ILogger<EnrollmentService> logger)
     {
         _enrollmentRepository = enrollmentRepository;
         _userRepository = userRepository;
         _policyRepository = policyRepository;
+        _logger = logger;
     }
 
     public async Task<IEnumerable<Enrollment>> GetAllEnrollmentsAsync()
@@ -28,7 +30,10 @@ public class EnrollmentService : IEnrollmentService
 
     public async Task<Enrollment> AddEnrollmentAsync(Enrollment newEnrollment)
     {
-        return await _enrollmentRepository.AddEnrollmentAsync(newEnrollment);
+        _logger.LogInformation("Creating enrollment - UserId: {UserId}, PolicyId: {PolicyId}", newEnrollment.UserId, newEnrollment.PolicyId);
+        var result = await _enrollmentRepository.AddEnrollmentAsync(newEnrollment);
+        _logger.LogInformation("Enrollment created successfully - EnrollmentId: {EnrollmentId}", result.Id);
+        return result;
     }
 
     public async Task<Enrollment?> UpdateEnrollmentAsync(int id, Enrollment updatedEnrollment)
@@ -84,12 +89,24 @@ public class EnrollmentService : IEnrollmentService
 
     public async Task<Enrollment?> ApproveEnrollmentAsync(int id)
     {
-       return await _enrollmentRepository.ApproveEnrollmentAsync(id);
+        _logger.LogInformation("Approving enrollment - EnrollmentId: {EnrollmentId}", id);
+        var result = await _enrollmentRepository.ApproveEnrollmentAsync(id);
+        if (result != null)
+        {
+            _logger.LogInformation("Enrollment approved - EnrollmentId: {EnrollmentId}, UserId: {UserId}", id, result.UserId);
+        }
+        return result;
     }
 
     public async Task<Enrollment?> RejectEnrollmentAsync(int id)
     {
-        return await _enrollmentRepository.RejectEnrollmentAsync(id);
+        _logger.LogInformation("Rejecting enrollment - EnrollmentId: {EnrollmentId}", id);
+        var result = await _enrollmentRepository.RejectEnrollmentAsync(id);
+        if (result != null)
+        {
+            _logger.LogInformation("Enrollment rejected - EnrollmentId: {EnrollmentId}, UserId: {UserId}", id, result.UserId);
+        }
+        return result;
     }
 
 }

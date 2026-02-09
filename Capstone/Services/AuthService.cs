@@ -11,19 +11,24 @@ public class AuthService : IAuthService
 {
     private readonly IUserRepository _userRepository;
     private readonly IConfiguration _configuration;
+    private readonly ILogger<AuthService> _logger;
 
-    public AuthService(IUserRepository userRepository, IConfiguration configuration)
+    public AuthService(IUserRepository userRepository, IConfiguration configuration, ILogger<AuthService> logger)
     {
         _userRepository = userRepository;
         _configuration = configuration;
+        _logger = logger;
     }
 
     public async Task<AuthResponseDto> RegisterAsync(RegisterDto registerDto)
     {
+        _logger.LogInformation("Registration attempt for email: {Email}", registerDto.Email);
+        
         // Check if user with the same email already exists
         var existingUser = await _userRepository.GetUserByEmailAsync(registerDto.Email);
         if (existingUser != null)
         {
+            _logger.LogWarning("Registration failed - Email already exists: {Email}", registerDto.Email);
             throw new Exception("Email is already registered.");
         }
 
@@ -40,6 +45,8 @@ public class AuthService : IAuthService
 
         var createdUser = await _userRepository.AddUserAsync(newUser);
         var token = GenerateJwtToken(createdUser);
+        
+        _logger.LogInformation("User registered successfully - ID: {UserId}, Email: {Email}", createdUser.Id, createdUser.Email);
 
         return new AuthResponseDto
         {
@@ -56,13 +63,18 @@ public class AuthService : IAuthService
 
     public async Task<AuthResponseDto> LoginAsync(LoginDto loginDto)
     {
+        _logger.LogInformation("Login attempt for email: {Email}", loginDto.Email);
+        
         var user = await _userRepository.GetUserByEmailAsync(loginDto.Email);
         if (user == null || !BCrypt.Net.BCrypt.Verify(loginDto.PasswordHash, user.PasswordHash))
         {
+            _logger.LogWarning("Login failed for email: {Email}", loginDto.Email);
             throw new Exception("Invalid email or password.");
         }
 
         var token = GenerateJwtToken(user);
+        
+        _logger.LogInformation("User logged in successfully - ID: {UserId}, Email: {Email}, Role: {Role}", user.Id, user.Email, user.Role);
 
         return new AuthResponseDto
         {

@@ -12,18 +12,24 @@ using Microsoft.AspNetCore.Authorization;
 public class AdminEnrollmentController : ControllerBase
 {
     private readonly IEnrollmentService _enrollmentService;
-   private readonly IPolicyService policyService;
-    public AdminEnrollmentController(IEnrollmentService enrollmentService, IPolicyService _policyService)
+    private readonly IPolicyService policyService;
+    private readonly ILogger<AdminEnrollmentController> _logger;
+    
+    public AdminEnrollmentController(IEnrollmentService enrollmentService, IPolicyService _policyService, ILogger<AdminEnrollmentController> logger)
     {
         _enrollmentService = enrollmentService;
-       this.policyService = _policyService;
+        this.policyService = _policyService;
+        _logger = logger;
     }
 
        [HttpPost("policies", Name = "AdminCreatePolicy")]
     public async Task<IActionResult> CreatePolicy([FromBody] Policy policy)
     {
+        _logger.LogInformation("Admin creating new policy - Name: {PolicyName}", policy.PolicyName);
+        
         if (!ModelState.IsValid)
         {
+            _logger.LogWarning("Policy creation failed - Model validation errors");
             var errors = ModelState
                 .Where(x => x.Value.Errors.Count > 0)
                 .Select(x => new 
@@ -41,12 +47,15 @@ public class AdminEnrollmentController : ControllerBase
         }
 
         var createdPolicy = await policyService.CreatePolicyAsync(policy);
+        _logger.LogInformation("Policy created successfully - PolicyId: {PolicyId}", createdPolicy.Id);
         return CreatedAtRoute("GetPolicyById", new { id = createdPolicy.Id }, createdPolicy);
     }
 
        [HttpPut("policies/{id}", Name = "AdminUpdatePolicy")]
     public async Task<IActionResult> UpdatePolicy(int id, [FromBody] Policy policy)
     {
+        _logger.LogInformation("Admin updating policy - PolicyId: {PolicyId}", id);
+        
         if (id != policy.Id)
         {
             return BadRequest(new { message = "ID mismatch." });
@@ -77,7 +86,9 @@ public class AdminEnrollmentController : ControllerBase
 
     [HttpPost("enrollments/{id}/approve", Name = "ApproveEnrollment")]
     public async Task<IActionResult> ApproveEnrollment(int id)
-    {        var enrollment = await _enrollmentService.GetEnrollmentByIdAsync(id);
+    {
+        _logger.LogInformation("Admin attempting to approve enrollment - EnrollmentId: {EnrollmentId}", id);
+        var enrollment = await _enrollmentService.GetEnrollmentByIdAsync(id);
         if (enrollment == null)
         {
             return NotFound(new { message = $"Enrollment with ID {id} not found." });
@@ -88,7 +99,9 @@ public class AdminEnrollmentController : ControllerBase
 
     [HttpPost("enrollments/{id}/reject", Name = "RejectEnrollment")]
     public async Task<IActionResult> RejectEnrollment(int id)
-    {        var enrollment = await _enrollmentService.GetEnrollmentByIdAsync(id);
+    {
+        _logger.LogInformation("Admin attempting to reject enrollment - EnrollmentId: {EnrollmentId}", id);
+        var enrollment = await _enrollmentService.GetEnrollmentByIdAsync(id);
         if (enrollment == null)
         {            return NotFound(new { message = $"Enrollment with ID {id} not found." });  
         }
