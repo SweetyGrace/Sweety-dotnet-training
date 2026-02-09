@@ -14,12 +14,14 @@ public class UserController : ControllerBase
     }
 
     [HttpGet(Name = "GetUsers")]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> GetUsers()
     {
         return Ok(await userService.GetAllUsersAsync());
     }
 
     [HttpGet("{id}", Name = "GetUserById")]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> GetUserById(int id)
     {       var user = await userService.GetUserByIdAsync(id);
          if (user == null)
@@ -54,6 +56,7 @@ public class UserController : ControllerBase
     }
 
     [HttpDelete("{id}", Name = "DeleteUser")]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> DeleteUser(int id)
     {        
         var success = await userService.DeleteUserAsync(id);
