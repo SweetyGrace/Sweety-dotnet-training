@@ -3,6 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Capstone.Entities;
 
+[Table("enrollments")]
 public class Enrollment
 {
  

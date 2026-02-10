@@ -5,6 +5,7 @@ using Capstone.Services;
 using Capstone.DTOs;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
 
 [ApiController]
 [Route("api")]
@@ -23,8 +24,7 @@ public class EnrollmentController : ControllerBase
     [HttpPost("policies/{policyId}/enroll", Name = "EnrollUserInPolicy")]
     public async Task<IActionResult> EnrollUserInPolicy(int policyId)
     {
-       var UserIdFromToken = int.Parse(User.Claims.FirstOrDefault(c => c.Type == "UserId")?.Value ?? "0");
-       //        var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+       var UserIdFromToken = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "0");
         if (UserIdFromToken == 0)
         {
             _logger.LogWarning("Enrollment attempt with invalid token - PolicyId: {PolicyId}", policyId);
@@ -32,7 +32,7 @@ public class EnrollmentController : ControllerBase
         }
         
         _logger.LogInformation("Enrollment request - UserId: {UserId}, PolicyId: {PolicyId}", UserIdFromToken, policyId);
-        var enrollment = await _enrollmentService.AddEnrollmentAsync(new Enrollment { UserId = UserIdFromToken, PolicyId = policyId, Status = "Active" });
+        var enrollment = await _enrollmentService.AddEnrollmentAsync(new Enrollment { UserId = UserIdFromToken, PolicyId = policyId, Status = "Pending" });
         return Ok(enrollment);
       
     }
@@ -40,7 +40,7 @@ public class EnrollmentController : ControllerBase
     [HttpGet("my/enrollments", Name = "GetMyEnrollments")]
     public async Task<IActionResult> GetMyEnrollments()
     {
-        var UserIdFromToken = int.Parse(User.Claims.FirstOrDefault(c => c.Type == "UserId")?.Value ?? "0");
+        var UserIdFromToken = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "0");
         if (UserIdFromToken == 0)
         {
             _logger.LogWarning("Attempt to get enrollments with invalid token");
