@@ -37,15 +37,29 @@ public class UserRepository : IUserRepository
         return user;
     }
 
-    public async Task<User> UpdateUserAsync(int id, User user)
+    public async Task<User?> UpdateUserAsync(int id, UpdateUserDto updateDto)
     {
         var existingUser = await context.Users.FindAsync(id);
         if (existingUser == null)
         {
-            throw new Exception("User not found");
+            return null;
         }
 
-        context.Users.Update(existingUser);
+        // Update only the fields that are provided (not null)
+        if (updateDto.Name != null)
+            existingUser.Name = updateDto.Name;
+        
+        if (updateDto.Email != null)
+            existingUser.Email = updateDto.Email;
+        
+        if (updateDto.PasswordHash != null)
+            existingUser.PasswordHash = BCrypt.Net.BCrypt.HashPassword(updateDto.PasswordHash);
+        
+        if (updateDto.Role != null)
+            existingUser.Role = updateDto.Role;
+        
+        existingUser.UpdatedAt = DateTime.UtcNow;
+
         await context.SaveChangesAsync();
         return existingUser;
     }

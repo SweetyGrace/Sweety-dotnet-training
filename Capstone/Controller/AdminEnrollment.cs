@@ -52,16 +52,16 @@ public class AdminEnrollmentController : ControllerBase
     }
 
        [HttpPut("policies/{id}", Name = "AdminUpdatePolicy")]
-    public async Task<IActionResult> UpdatePolicy(int id, [FromBody] Policy policy)
+    public async Task<IActionResult> UpdatePolicy(int id, [FromBody] UpdatePolicyDto updateDto)
     {
         _logger.LogInformation("Admin updating policy - PolicyId: {PolicyId}", id);
         
-        if (id != policy.Id)
+        if (!ModelState.IsValid)
         {
-            return BadRequest(new { message = "ID mismatch." });
+            return BadRequest(ModelState);
         }
 
-        var updatedPolicy = await policyService.UpdatePolicyAsync(policy);
+        var updatedPolicy = await policyService.UpdatePolicyAsync(id, updateDto);
         if (updatedPolicy == null)
         {
             return NotFound(new { message = $"Policy with ID {id} not found." });

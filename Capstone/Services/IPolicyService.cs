@@ -1,4 +1,6 @@
 using Capstone.Entities;
+using Capstone.DTOs;
+
 namespace Capstone.Services
 {
     public interface IPolicyService
@@ -9,7 +11,7 @@ namespace Capstone.Services
       Task<IEnumerable<Policy>> GetPolicyStatus(bool isActive);
       Task<Policy> CreatePolicyAsync(Policy policy);
 
-      Task<Policy> UpdatePolicyAsync(Policy policy);
+      Task<Policy?> UpdatePolicyAsync(int id, UpdatePolicyDto updateDto);
       Task<bool> DeletePolicyAsync(int id);
         
     }

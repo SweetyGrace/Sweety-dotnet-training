@@ -1,4 +1,5 @@
 using Capstone.Entities;
+using Capstone.DTOs;
 
 namespace Capstone.Services;
 
@@ -9,7 +10,7 @@ public interface IuserService
     Task<IEnumerable<User>> GetAllUsersAsync();
     Task<User?> GetUserByIdAsync(int id);
     Task<User> CreateUserAsync(User newUser);
-    Task<User?> UpdateUserAsync(int id, User updatedUser);
+    Task<User?> UpdateUserAsync(int id, UpdateUserDto updateDto);
     Task<bool> DeleteUserAsync(int id); 
 }
 

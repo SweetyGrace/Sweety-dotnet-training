@@ -1,5 +1,6 @@
 using Capstone.Entities;
 using Capstone.Data;
+using Capstone.DTOs;
 using Microsoft.EntityFrameworkCore;
 
 namespace Capstone.Repositories
@@ -45,11 +46,29 @@ namespace Capstone.Repositories
                 return policy;
             }
 
-            public async Task<Policy> UpdatePolicyAsync(Policy policy)
+            public async Task<Policy?> UpdatePolicyAsync(int id, UpdatePolicyDto updateDto)
             {
-                _context.Policies.Update(policy);
+                var existingPolicy = await _context.Policies.FindAsync(id);
+                if (existingPolicy == null)
+                {
+                    return null;
+                }
+
+                // Update only the fields that are provided (not null)
+                if (updateDto.PolicyName != null)
+                    existingPolicy.PolicyName = updateDto.PolicyName;
+                
+                if (updateDto.PolicyDescription != null)
+                    existingPolicy.PolicyDescription = updateDto.PolicyDescription;
+                
+                if (updateDto.PremiumAmount.HasValue)
+                    existingPolicy.PremiumAmount = (int)updateDto.PremiumAmount.Value;
+                
+                if (updateDto.IsActive.HasValue)
+                    existingPolicy.IsActive = updateDto.IsActive.Value;
+
                 await _context.SaveChangesAsync();
-                return policy;
+                return existingPolicy;
             }
 
             public async Task<bool> DeletePolicyAsync(int id)

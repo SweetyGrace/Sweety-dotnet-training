@@ -1,6 +1,7 @@
 
 using Capstone.Entities;
 using Capstone.Repositories;
+using Capstone.DTOs;
 
 namespace Capstone.Services
 {
@@ -37,9 +38,9 @@ namespace Capstone.Services
             return await policyRepository.AddPolicyAsync(policy);
         }
 
-        public async Task<Policy> UpdatePolicyAsync(Policy policy)
+        public async Task<Policy?> UpdatePolicyAsync(int id, UpdatePolicyDto updateDto)
         {
-            return await policyRepository.UpdatePolicyAsync(policy);
+            return await policyRepository.UpdatePolicyAsync(id, updateDto);
         }
 
         public async Task<bool> DeletePolicyAsync(int id)

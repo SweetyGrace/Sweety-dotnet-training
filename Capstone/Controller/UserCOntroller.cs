@@ -1,6 +1,7 @@
 namespace Capstone.Controller;
 using Capstone.Entities;
 using Capstone.Services;
+using Capstone.DTOs;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc; 
 
@@ -40,19 +41,20 @@ public class UserController : ControllerBase
     }
 
     [HttpPut("{id}", Name = "UpdateUser")]
-    public async Task<IActionResult> UpdateUser(int id, [FromBody] User user)
-    {        if (id != user.Id)
+    [Authorize(Roles = "Admin")]
+    public async Task<IActionResult> UpdateUser(int id, [FromBody] UpdateUserDto updateDto)
+    {
+        if (!ModelState.IsValid)
         {
-            return BadRequest(new { message = "ID in URL does not match ID in body." });
-        }   
-        var updatedUser = await userService.UpdateUserAsync(id, user);
+            return BadRequest(ModelState);
+        }
+        
+        var updatedUser = await userService.UpdateUserAsync(id, updateDto);
         if (updatedUser == null)
         {
             return NotFound(new { message = $"User with ID {id} not found." });
         }
         return Ok(updatedUser);
-
-
     }
 
     [HttpDelete("{id}", Name = "DeleteUser")]

@@ -9,7 +9,7 @@ namespace Capstone.Repositories
         Task<IEnumerable<Policy>> SearchPoliciesAsync(int minAmount, int maxAmount);
         Task<IEnumerable<Policy>> GetPolicyStatus(bool isActive);
         Task<Policy> AddPolicyAsync(Policy policy);
-        Task<Policy> UpdatePolicyAsync(Policy policy);
+        Task<Policy?> UpdatePolicyAsync(int id, UpdatePolicyDto updateDto);
         Task<bool> DeletePolicyAsync(int id);
         
 

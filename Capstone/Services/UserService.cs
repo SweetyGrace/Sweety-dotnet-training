@@ -27,9 +27,9 @@ public class UserService : IuserService
         return await _userRepository.AddUserAsync(newUser);
     }
 
-    public async Task<User?> UpdateUserAsync(int id, User updatedUser)
+    public async Task<User?> UpdateUserAsync(int id, UpdateUserDto updateDto)
     {
-        return await _userRepository.UpdateUserAsync(id, updatedUser);
+        return await _userRepository.UpdateUserAsync(id, updateDto);
     }
 
     public async Task<bool> DeleteUserAsync(int id)

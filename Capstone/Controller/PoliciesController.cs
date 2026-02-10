@@ -4,6 +4,7 @@ using System.Runtime.ExceptionServices;
 using Microsoft.AspNetCore.Mvc;
 using Capstone.Services;
 using Capstone.Entities;
+using Capstone.DTOs;
 using Capstone.Filters;
 using Microsoft.AspNetCore.Authorization;
 
@@ -79,14 +80,14 @@ public class PoliciesController : ControllerBase
 
     [HttpPut("{id}", Name = "UpdatePolicy")]
     [Authorize(Roles = "Admin")]
-    public async Task<IActionResult> UpdatePolicy(int id, [FromBody] Policy policy)
+    public async Task<IActionResult> UpdatePolicy(int id, [FromBody] UpdatePolicyDto updateDto)
     {
-        if (id != policy.Id)
+        if (!ModelState.IsValid)
         {
-            return BadRequest(new { message = "ID mismatch." });
+            return BadRequest(ModelState);
         }
 
-        var updatedPolicy = await policyService.UpdatePolicyAsync(policy);
+        var updatedPolicy = await policyService.UpdatePolicyAsync(id, updateDto);
         if (updatedPolicy == null)
         {
             return NotFound(new { message = $"Policy with ID {id} not found." });

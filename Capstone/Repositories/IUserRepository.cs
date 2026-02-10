@@ -1,4 +1,5 @@
 using Capstone.Entities;
+using Capstone.DTOs;
 
 namespace Capstone.Repositories;
 
@@ -9,7 +10,7 @@ public interface IUserRepository
     Task <IEnumerable<User>> GetAllUsersAsync();
     Task<User?> GetUserByIdAsync(int id);
     Task<User> AddUserAsync(User user);
-    Task<User> UpdateUserAsync(int id, User user);
+    Task<User?> UpdateUserAsync(int id, UpdateUserDto updateDto);
     Task<bool> DeleteUserAsync(int id);
 
     Task<User?> GetUserByEmailAsync(string email);
